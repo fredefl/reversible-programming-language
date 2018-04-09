@@ -27,8 +27,9 @@ let testStdout = []
 
 const operations = {
   read: ([name]) => {
-    if (getVar(name) !== 0)
-      throw `Variable '${name}' is trying to be read, but is not zero`
+    const existingValue = getVar(name)
+    if (existingValue !== 0)
+      throw `Variable '${name}' is trying to be read, but is not zero (${existingValue})`
 
     const input = testStdin.length > 0 ? testStdin.shift() : readlineSync.question()
 
@@ -58,6 +59,12 @@ const operations = {
     }
 
     // TODO: implment that fiExp thing
+  },
+  repeat: ([loopStatement, loopExp]) => {
+    while (!evaluateExpression(loopExp)) {
+      print(variables)
+      interpret(loopStatement)
+    }
   },
   '+=': ([name, expression]) => storeVar(name, getVar(name) + evaluateExpression(expression)),
   '-=': ([name, expression]) => storeVar(name, getVar(name) - evaluateExpression(expression)),

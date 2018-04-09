@@ -1,0 +1,5 @@
+read test;
+i += 0;
+repeat test += i; i += 1 until i = 10;
+print test;
+print i;

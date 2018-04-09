@@ -68,6 +68,7 @@ parser.bnf = {
     ["READ NAME",      "$$ = [[$1, $2]]"],
     ["PRINT NAME",      "$$ = [[$1, $2]]"],
     ["IF e THEN statement ELSE statement FI e", "$$ = [[$1, $2, $4, $6, $8]]"],
+    ["REPEAT statement UNTIL e", "$$ = [[$1, $2, $4]]"],
   ],
   e: [
     ["INTEGER",   "$$ = parseInt($1)"],
