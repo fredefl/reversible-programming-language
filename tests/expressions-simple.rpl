@@ -1,0 +1,6 @@
+test += 10;
+hast += 5;
+test += 2 + hast;
+test -= 4*2;
+print test;
+print hast;

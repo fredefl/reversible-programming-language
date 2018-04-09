@@ -1,5 +1,12 @@
 read test;
 test += 5;
 hast += test + 3;
+hast += test * 5;
+hast += test / 20;
+hast += test - 5;
+read goodstuff;
+hast -= goodstuff;
 test += hast;
 print test;
+print hast;
+print goodstuff;

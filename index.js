@@ -13,6 +13,7 @@ program
   .usage('[options] <file>')
   .option('-v, --verbose', 'Debug verbosity')
   .option('-t, --test', 'Run test using the adjacently placed .in and .out files')
+  .option('-r, --reversed', 'Run code reversed')
   .parse(process.argv);
 
 const variables = {}
@@ -23,7 +24,6 @@ const print = (value) => console.log(util.inspect(value, false, null, true))
 
 let testStdin = []
 let testStdout = []
-//console.log(util.inspect(statements, false, null, true))
 
 const operations = {
   read: ([name]) => {
@@ -53,31 +53,60 @@ const operations = {
   '+': ([a, b]) => evaluateExpression(a) + evaluateExpression(b),
   '-': ([a, b]) => evaluateExpression(a) - evaluateExpression(b),
   '*': ([a, b]) => evaluateExpression(a) * evaluateExpression(b),
-  '/': ([a, b]) => evaluateExpression(a) / evaluateExpression(b),
+  '/': ([a, b]) => parseInt(evaluateExpression(a) / evaluateExpression(b), 10),
   'var': ([name]) => getVar(name),
 }
+
+const reversedOperations = {
+  read: 'print',
+  print: 'read',
+  '+=': '-=',
+  '-=': '+=',
+  /*'+': '-',
+  '-': '+',
+  '*': '/',
+  '/': '*',*/
+}
+
+const isReversed = program.reversed != null
 
 const evaluateExpression = (expression) => {
   if (!isNaN(expression))
     return parseInt(expression)
 
-  const [operation, ...options] = expression
+  let [operation, ...options] = expression
 
   if (!Object.keys(operations).includes(operation)) {
     console.error(`${operation} is not implemented!`)
     return 0
   }
 
+  if (isReversed && Object.keys(reversedOperations).includes(operation)) {
+    console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
+    operation = reversedOperations[operation]
+  }
+
   return operations[operation](options)
 }
 
 const interpret = (statements) => {
+  print(statements)
+  if (isReversed)
+    statements.reverse()
+
+  print(statements)
+
   for (statement of statements) {
-    const [operation, ...options] = statement
+    let [operation, ...options] = statement
     
     if (!Object.keys(operations).includes(operation)) {
       console.error(`${operation} is not implemented!`)
       continue
+    }
+
+    if (isReversed && Object.keys(reversedOperations).includes(operation)) {
+      console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
+      operation = reversedOperations[operation]
     }
 
     operations[operation](options)
@@ -99,30 +128,48 @@ const codeFile = program.args[0]
 const code = fs.readFileSync(codeFile).toString()
 const statements = parsed.parse(code)
 
+// print(statements)
+
 if (program.test != null) {
   const parsedCodeFile = path.parse(codeFile)
   const dirAndName = `${parsedCodeFile.dir}/${parsedCodeFile.name}`
-  const inFile = `${dirAndName}.in`
-  const outFile = `${dirAndName}.out`
-  const outTestFile = `${dirAndName}.out-test`
+  let inFile = `${dirAndName}.in`
+  let outFile = `${dirAndName}.out`
+  const resultTestFile = `${dirAndName}.result-test`
+
+  if (isReversed) {
+    let temp = inFile
+    inFile = outFile
+    outFile = temp
+  }
 
   const inData = fs.readFileSync(inFile).toString()
   testStdin = inData.split("\n").map(s => s.trim())
 
+  if (isReversed)
+    testStdin.reverse()
+
   interpret(statements)
 
   const outData = fs.readFileSync(outFile).toString()
-  const outTestData = testStdout.join('\n')
 
-  if (outData === outTestData) {
+  if (isReversed)
+    testStdout.reverse()
+
+  const resultTestData = testStdout.join('\n')
+
+  if (outData === resultTestData) {
     console.log(chalk.green("Test successful!"))
   } else {
-    console.error(chalk.red(`Test was an error! See: ${outTestFile}`))
+    console.error(chalk.red(`Test was an error! See: ${resultTestFile}`))
   }
 
-  fs.writeFileSync(outTestFile, outTestData)
+  fs.writeFileSync(resultTestFile, resultTestData)
+
+  print(variables)
 } else {
   interpret(statements)
+  print(variables)
 }
 
 

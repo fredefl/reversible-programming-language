@@ -30,6 +30,7 @@ parser.lex.rules = [
 
   // Assignment
   ["\\+=",        "return '+='"],
+  ["\\-=",        "return '-='"],
 
   // Math
   ["\\+",    "return '+'"],
