@@ -9,7 +9,6 @@ const program = require('commander')
 const chalk = require('chalk')
 
 program
-  .version('0.1.0')
   .usage('[options] <file>')
   .option('-v, --verbose', 'Debug verbosity')
   .option('-t, --test', 'Run test using the adjacently placed .in and .out files')
