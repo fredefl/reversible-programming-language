@@ -38,13 +38,17 @@ parser.lex.rules = [
   ["\\*",    "return '*'"],
   ["\\/",    "return '/'"],
   ["%",      "return '%'"],
+
+  // Comparison
   ["<",      "return '<'"],
+  ["=",      "return '='"],
 
   // Variable
   ["[A-z]+", "return 'NAME'"],
 ]
 
 parser.operators = [
+  ["left", "=", "<"],
   ["left", "+", "-"],
   ["left", "*", "/"],
   ["left", ";"],
@@ -63,6 +67,7 @@ parser.bnf = {
     ["PROC NAME statement END",  "$$ = [[$1, $2]]"],
     ["READ NAME",      "$$ = [[$1, $2]]"],
     ["PRINT NAME",      "$$ = [[$1, $2]]"],
+    ["IF e THEN statement ELSE statement FI e", "$$ = [[$1, $2, $4, $6, $8]]"],
   ],
   e: [
     ["INTEGER",   "$$ = parseInt($1)"],
@@ -71,6 +76,8 @@ parser.bnf = {
     ["e - e",     "$$ = [$2, $1, $3]"],
     ["e * e",     "$$ = [$2, $1, $3]"],
     ["e / e",     "$$ = [$2, $1, $3]"],
+    ["e < e",     "$$ = [$2, $1, $3]"],
+    ["e = e",     "$$ = [$2, $1, $3]"],
   ],
 }
 

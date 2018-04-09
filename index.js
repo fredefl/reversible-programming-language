@@ -48,12 +48,25 @@ const operations = {
 
     storeVar(name, 0)
   },
+  if: ([ifExp, thenStat, elseStat, fiExp]) => {
+    const ifResult = evaluateExpression(ifExp)
+
+    if (ifResult) {
+      interpretStatement(thenStat[0])
+    } else {
+      interpretStatement(elseStat[0])
+    }
+
+    // TODO: implment that fiExp thing
+  },
   '+=': ([name, expression]) => storeVar(name, getVar(name) + evaluateExpression(expression)),
   '-=': ([name, expression]) => storeVar(name, getVar(name) - evaluateExpression(expression)),
   '+': ([a, b]) => evaluateExpression(a) + evaluateExpression(b),
   '-': ([a, b]) => evaluateExpression(a) - evaluateExpression(b),
   '*': ([a, b]) => evaluateExpression(a) * evaluateExpression(b),
   '/': ([a, b]) => parseInt(evaluateExpression(a) / evaluateExpression(b), 10),
+  '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b),
+  '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b),
   'var': ([name]) => getVar(name),
 }
 
@@ -69,6 +82,7 @@ const reversedOperations = {
 }
 
 const isReversed = program.reversed != null
+const isVerbose = program.verbose != null
 
 const evaluateExpression = (expression) => {
   if (!isNaN(expression))
@@ -90,27 +104,28 @@ const evaluateExpression = (expression) => {
 }
 
 const interpret = (statements) => {
-  print(statements)
   if (isReversed)
     statements.reverse()
 
-  print(statements)
-
   for (statement of statements) {
-    let [operation, ...options] = statement
-    
-    if (!Object.keys(operations).includes(operation)) {
-      console.error(`${operation} is not implemented!`)
-      continue
-    }
-
-    if (isReversed && Object.keys(reversedOperations).includes(operation)) {
-      console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
-      operation = reversedOperations[operation]
-    }
-
-    operations[operation](options)
+    interpretStatement(statement)
   }
+}
+
+const interpretStatement = (statement) => {
+  let [operation, ...options] = statement
+  
+  if (!Object.keys(operations).includes(operation)) {
+    console.error(`${operation} is not implemented!`)
+    return
+  }
+
+  if (isReversed && Object.keys(reversedOperations).includes(operation)) {
+    console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
+    operation = reversedOperations[operation]
+  }
+
+  operations[operation](options)
 }
 
 
@@ -127,8 +142,6 @@ if (program.args.length > 1) {
 const codeFile = program.args[0]
 const code = fs.readFileSync(codeFile).toString()
 const statements = parsed.parse(code)
-
-// print(statements)
 
 if (program.test != null) {
   const parsedCodeFile = path.parse(codeFile)
@@ -166,11 +179,10 @@ if (program.test != null) {
 
   fs.writeFileSync(resultTestFile, resultTestData)
 
-  print(variables)
 } else {
   interpret(statements)
-  print(variables)
 }
 
-
+if (isVerbose)
+  print(variables)
 
