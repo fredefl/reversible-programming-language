@@ -14,7 +14,7 @@ program
   .option('-v, --verbose', 'Debug verbosity')
   .option('-t, --test', 'Run test using the adjacently placed .in and .out files')
   .option('-r, --reversed', 'Run code reversed')
-  .parse(process.argv);
+  .parse(process.argv)
 
 const variables = {}
 const getVar = (name) => variables[name] || 0
@@ -49,7 +49,7 @@ const operations = {
     storeVar(name, 0)
   },
   if: ([ifExp, thenStat, elseStat, fiExp]) => {
-    const ifResult = evaluateExpression(ifExp)
+    const ifResult = isReversed ? evaluateExpression(fiExp) : evaluateExpression(ifExp)
 
     if (ifResult) {
       interpretStatement(thenStat[0])
@@ -75,10 +75,6 @@ const reversedOperations = {
   print: 'read',
   '+=': '-=',
   '-=': '+=',
-  /*'+': '-',
-  '-': '+',
-  '*': '/',
-  '/': '*',*/
 }
 
 const isReversed = program.reversed != null
@@ -96,7 +92,8 @@ const evaluateExpression = (expression) => {
   }
 
   if (isReversed && Object.keys(reversedOperations).includes(operation)) {
-    console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
+    if (isVerbose)
+      console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
     operation = reversedOperations[operation]
   }
 
@@ -121,7 +118,8 @@ const interpretStatement = (statement) => {
   }
 
   if (isReversed && Object.keys(reversedOperations).includes(operation)) {
-    console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
+    if (isVerbose)
+      console.log(`Running ${reversedOperations[operation]} instead of ${operation}`)
     operation = reversedOperations[operation]
   }
 

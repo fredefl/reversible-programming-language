@@ -1,0 +1,3 @@
+read sTest;
+if sTest = 16 then sTest += 2 else sTest += 13 fi sTest = 3;
+print sTest;
