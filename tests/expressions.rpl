@@ -1,0 +1,5 @@
+read test;
+test += 5;
+hast += test + 3;
+test += hast;
+print test;

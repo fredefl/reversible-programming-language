@@ -6,6 +6,9 @@
   "author": "Frederik Lassen <frederiklassen@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "jison": "^0.4.18"
+    "chalk": "^2.3.2",
+    "commander": "^2.15.1",
+    "jison": "^0.4.18",
+    "readline-sync": "^1.4.9"
   }
 }
