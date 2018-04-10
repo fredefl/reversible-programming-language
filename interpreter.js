@@ -59,7 +59,7 @@ const operations = {
   },
   repeat: ([loopStatement, loopExp]) => {
     while (!evaluateExpression(loopExp)) {
-      print("Loop variables: ", variables)
+      printVerbose("Loop variables: ", variables)
       interpretStatements(loopStatement)
     }
   },

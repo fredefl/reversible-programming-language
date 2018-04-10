@@ -17,9 +17,10 @@ program
 
 const isReversed = program.reversed != null
 const isVerbose = program.verbose != null
+const isTest = program.test != null
 
 if (program.args.length == 0) {
-  console.error("No file specified!")
+  throw "No file specified"
   program.help()
 }
 
@@ -34,7 +35,7 @@ const statements = parser.parse(code)
 
 let interpretationResults = {}
 
-if (program.test != null) {
+if (isTest) {
   const parsedCodeFile = path.parse(codeFile)
   const dirAndName = `${parsedCodeFile.dir}/${parsedCodeFile.name}`
   let inFile = `${dirAndName}.in`
