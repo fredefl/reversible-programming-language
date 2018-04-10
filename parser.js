@@ -45,6 +45,7 @@ parsingGrammar.lex.rules = [
 
   // Comparison
   ["<",      "return '<'"],
+  [">",      "return '>'"],
   ["!=",      "return '!='"],
   ["=",      "return '='"],
 
@@ -53,7 +54,7 @@ parsingGrammar.lex.rules = [
 ]
 
 parsingGrammar.operators = [
-  ["left", "!=", "=", "<"],
+  ["left", "!=", "=", "<", ">"],
   ["left", "+", "-"],
   ["left", "*", "/", "%"],
   ["left", ";"],
@@ -86,6 +87,7 @@ parsingGrammar.bnf = {
     ["e / e",     "$$ = [$2, $1, $3]"],
     ["e % e",     "$$ = [$2, $1, $3]"],
     ["e < e",     "$$ = [$2, $1, $3]"],
+    ["e > e",     "$$ = [$2, $1, $3]"],
     ["e != e",     "$$ = [$2, $1, $3]"],
     ["e = e",     "$$ = [$2, $1, $3]"],
   ],

@@ -1,14 +1,11 @@
-proc fac
-from x = 1 repeat
-x *= n;
-n -= 1;
-until n = 1;
-end;
-
 read n;
-x += 1;
+result += 1;
 
-call fac;
+from result = 1 repeat 
+	result *= n;
+	n -= 1;
+until n = 1;
+
 n -= 1;
 
-print x;
+print result;

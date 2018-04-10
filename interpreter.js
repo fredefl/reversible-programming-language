@@ -94,6 +94,7 @@ const operations = {
   '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b) ? 1 : 0, // Output 1,0 instead of true,false
   '!=': ([a, b]) => evaluateExpression(a) != evaluateExpression(b) ? 1 : 0, // Output 1,0 instead of true,false
   '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b) ? 1 : 0,
+  '>': ([a, b]) => evaluateExpression(a) > evaluateExpression(b) ? 1 : 0,
   'var': ([name]) => getVar(name),
   'proc': () => null,
   'call': ([name]) => {

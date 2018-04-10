@@ -8,6 +8,11 @@ print hast;
 mod += 31 % 7;
 print mod;
 
+q += 6 % 3 != 0;
+print q;
+q += 6 % 3 = 0;
+print q;
+
 bool += 1 = 1;
 otherbool -= 2 < 5;
 otherbool -= 2 < 5;

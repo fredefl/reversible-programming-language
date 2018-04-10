@@ -1,0 +1,10 @@
+read n;
+
+from n = n repeat
+  if n % i = 0 then
+    from n = n repeat
+      n /= i;
+    until n % i != 0
+  else n += 0 fi n % i = 0;
+  i += 1;
+until i > n;
