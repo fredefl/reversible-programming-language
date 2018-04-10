@@ -64,7 +64,7 @@ parser.bnf = {
     ["NAME -= e",  "$$ = [[$2, $1, $3]]"],
     ["CALL NAME",  "$$ = [[$1, $2]]"],
     ["UNCALL NAME",  "$$ = [[$1, $2]]"],
-    ["PROC NAME statement END",  "$$ = [[$1, $2]]"],
+    ["PROC NAME statement ; END",  "$$ = [[$1, $2, $3]]"],
     ["READ NAME",      "$$ = [[$1, $2]]"],
     ["PRINT NAME",      "$$ = [[$1, $2]]"],
     ["IF e THEN statement ELSE statement FI e", "$$ = [[$1, $2, $4, $6, $8]]"],

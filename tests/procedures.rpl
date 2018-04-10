@@ -1,0 +1,17 @@
+read test;
+test += 3;
+print test;
+
+read number;
+
+call div;
+print output;
+
+proc div
+output += number / 5;
+end;
+
+number += 10;
+call div;
+print output;
+print number;

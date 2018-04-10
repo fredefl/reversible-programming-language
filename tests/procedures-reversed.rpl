@@ -1,0 +1,10 @@
+read number;
+
+uncall testproc;
+print output;
+print number;
+
+proc testproc
+number += 5;
+output += number * 2;
+end;

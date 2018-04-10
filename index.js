@@ -16,6 +16,7 @@ program
   .parse(process.argv)
 
 const variables = {}
+const procedures = {}
 const getVar = (name) => variables[name] || 0
 const storeVar = (name, value) => variables[name] = value
 
@@ -61,8 +62,8 @@ const operations = {
   },
   repeat: ([loopStatement, loopExp]) => {
     while (!evaluateExpression(loopExp)) {
-      print(variables)
-      interpret(loopStatement)
+      //print(variables)
+      interpretStatements(loopStatement)
     }
   },
   '+=': ([name, expression]) => storeVar(name, getVar(name) + evaluateExpression(expression)),
@@ -74,6 +75,21 @@ const operations = {
   '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b),
   '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b),
   'var': ([name]) => getVar(name),
+  'proc': () => null,
+  'call': ([name]) => {
+    if (!Object.keys(procedures).includes(name))
+      throw `Procedure ${name} is not defined!`
+
+    const procedureStatements = procedures[name]
+    return interpretStatements(procedureStatements)
+  },
+  'uncall': ([name]) => {
+    if (!Object.keys(procedures).includes(name))
+      throw `Procedure ${name} is not defined!`
+
+    const procedureStatements = procedures[name]
+    return interpretStatements(procedureStatements, true)
+  }
 }
 
 const reversedOperations = {
@@ -106,8 +122,27 @@ const evaluateExpression = (expression) => {
   return operations[operation](options)
 }
 
+const scanProcedures = (statements) => {
+  for (statement of statements) {
+    const [operation, ...options] = statement
+
+    if (operation === 'proc') {
+      const [name, procedureStatements] = options
+      if (Object.keys(procedures).includes(name))
+        throw `Procedure ${name} is defined multiple times!`
+
+      procedures[name] = procedureStatements
+    }
+  }
+}
+
 const interpret = (statements) => {
-  if (isReversed)
+  scanProcedures(statements)
+  return interpretStatements(statements)
+}
+
+const interpretStatements = (statements, reversed = false) => {
+  if (reversed ? !isReversed : isReversed)
     statements.reverse()
 
   for (statement of statements) {
@@ -179,6 +214,13 @@ if (program.test != null) {
     console.log(chalk.green("Test successful!"))
   } else {
     console.error(chalk.red(`Test was an error! See: ${resultTestFile}`))
+  }
+
+  const nonZeroVariables = Object.entries(variables).filter(([k, v]) => v !== 0)
+
+  if (nonZeroVariables.length > 0) {
+    const nonZeroVariablesText = nonZeroVariables.map(([k, v]) => `${k} (${v})`).join(', ')
+    console.error(chalk.yellow(`The following variables were non-zero: ${nonZeroVariablesText}`))
   }
 
   fs.writeFileSync(resultTestFile, resultTestData)
