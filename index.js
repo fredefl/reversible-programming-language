@@ -18,12 +18,12 @@ const isTest = program.test != null
 
 if (program.args.length == 0) {
   throw "No file specified"
-  program.help()
+  program.help() // exits
 }
 
 if (program.args.length > 1) {
   throw "Multiple files specified"
-  program.help()
+  program.help() // exits
 }
 
 const codeFile = program.args[0]
