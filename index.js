@@ -1,9 +1,6 @@
 const fs = require('fs')
-
 const parser = require('./parser')
-const util = require('util')
 const path = require('path')
-const readlineSync = require('readline-sync')
 const program = require('commander')
 const chalk = require('chalk')
 const interpreter = require('./interpreter')
