@@ -5,12 +5,24 @@ const util = require('util')
 // Global tables
 let variables = {}
 let procedures = {}
+let protectedVar = null
 
 // Utilities
-const getVar = (name) => variables[name] || 0
+const getVar = (name) => {
+  if (name === protectedVar)
+    throw `Variable ${name} was used on the right hand of its own assigning`
+
+  return variables[name] || 0
+}
 const storeVar = (name, value) => variables[name] = value
 const print = (title, value) => console.log(title, util.inspect(value, false, null, true))
 const printVerbose = (title, value) => isVerbose ? print(title, value) : null
+const protectVar = (name, func, ...args) => {
+  protectedVar = name
+  let result = func(...args)
+  protectedVar = null
+  return result
+}
 
 // Test IO
 let testStdin = []
@@ -63,8 +75,8 @@ const operations = {
       interpretStatements(loopStatement)
     }
   },
-  '+=': ([name, expression]) => storeVar(name, getVar(name) + evaluateExpression(expression)),
-  '-=': ([name, expression]) => storeVar(name, getVar(name) - evaluateExpression(expression)),
+  '+=': ([name, expression]) => storeVar(name, getVar(name) + protectVar(name, evaluateExpression, expression)),
+  '-=': ([name, expression]) => storeVar(name, getVar(name) - protectVar(name, evaluateExpression, expression)),
   '+': ([a, b]) => evaluateExpression(a) + evaluateExpression(b),
   '-': ([a, b]) => evaluateExpression(a) - evaluateExpression(b),
   '*': ([a, b]) => evaluateExpression(a) * evaluateExpression(b),

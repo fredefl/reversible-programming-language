@@ -77,7 +77,7 @@ if (isTest) {
   fs.writeFileSync(resultTestFile, resultTestData)
 
 } else {
-  interpreter.interpret({
+  interpretationResults = interpreter.interpret({
     statements,
     reversed: isReversed,
     verbose: isVerbose,
