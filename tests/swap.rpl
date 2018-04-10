@@ -1,0 +1,14 @@
+proc swap
+x += a;
+a += b;
+a -= x;
+b -= a;
+b += x;
+x -= b;
+end;
+
+read a;
+read b;
+call swap;
+print a;
+print b;

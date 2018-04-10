@@ -1,5 +1,8 @@
-read test;
-i += 0;
-repeat test += i; i += 1 until i = 10;
-print test;
-print i;
+read n;
+
+from o = 0 repeat
+o += 9;
+n -= 1;
+until n = 0;
+
+print o;

@@ -1,0 +1,17 @@
+proc fb
+from b = 1 repeat
+if a < b then a += b else b += a fi b < a;
+n -= 1;
+until n = 2;
+end;
+
+read n;
+
+a += 1;
+b += 1;
+
+call fb;
+
+n -= 2;
+print a;
+print b;

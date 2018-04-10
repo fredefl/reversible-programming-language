@@ -1,5 +1,5 @@
+read output;
 read number;
-
 uncall testproc;
 print output;
 print number;

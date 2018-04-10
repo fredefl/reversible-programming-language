@@ -1,0 +1,14 @@
+proc fac
+from x = 1 repeat
+x *= n;
+n -= 1;
+until n = 1;
+end;
+
+read n;
+x += 1;
+
+call fac;
+n -= 1;
+
+print x;

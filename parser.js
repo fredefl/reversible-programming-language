@@ -16,6 +16,7 @@ parsingGrammar.lex.rules = [
   ["fi",          "return 'FI'"],
 
   // Loop
+  ["from",        "return 'FROM'"],
   ["repeat",      "return 'REPEAT'"],
   ["until",       "return 'UNTIL'"],
 
@@ -32,6 +33,8 @@ parsingGrammar.lex.rules = [
   // Assignment
   ["\\+=",        "return '+='"],
   ["\\-=",        "return '-='"],
+  ["\\*=",        "return '*='"],
+  ["\\/=",        "return '/='"],
 
   // Math
   ["\\+",    "return '+'"],
@@ -42,6 +45,7 @@ parsingGrammar.lex.rules = [
 
   // Comparison
   ["<",      "return '<'"],
+  ["!=",      "return '!='"],
   ["=",      "return '='"],
 
   // Variable
@@ -49,7 +53,7 @@ parsingGrammar.lex.rules = [
 ]
 
 parsingGrammar.operators = [
-  ["left", "=", "<"],
+  ["left", "!=", "=", "<"],
   ["left", "+", "-"],
   ["left", "*", "/", "%"],
   ["left", ";"],
@@ -63,13 +67,15 @@ parsingGrammar.bnf = {
     ["statement ; statement", "$$ = $1.concat($3)"],
     ["NAME += e",  "$$ = [[$2, $1, $3]]"],
     ["NAME -= e",  "$$ = [[$2, $1, $3]]"],
+    ["NAME *= e",  "$$ = [[$2, $1, $3]]"],
+    ["NAME /= e",  "$$ = [[$2, $1, $3]]"],
     ["CALL NAME",  "$$ = [[$1, $2]]"],
     ["UNCALL NAME",  "$$ = [[$1, $2]]"],
     ["PROC NAME statement ; END",  "$$ = [[$1, $2, $3]]"],
     ["READ NAME",      "$$ = [[$1, $2]]"],
     ["PRINT NAME",      "$$ = [[$1, $2]]"],
     ["IF e THEN statement ELSE statement FI e", "$$ = [[$1, $2, $4, $6, $8]]"],
-    ["REPEAT statement UNTIL e", "$$ = [[$1, $2, $4]]"],
+    ["FROM e REPEAT statement ; UNTIL e", "$$ = [[$3, $2, $4, $7]]"],
   ],
   e: [
     ["INTEGER",   "$$ = parseInt($1)"],
@@ -80,6 +86,7 @@ parsingGrammar.bnf = {
     ["e / e",     "$$ = [$2, $1, $3]"],
     ["e % e",     "$$ = [$2, $1, $3]"],
     ["e < e",     "$$ = [$2, $1, $3]"],
+    ["e != e",     "$$ = [$2, $1, $3]"],
     ["e = e",     "$$ = [$2, $1, $3]"],
   ],
 }

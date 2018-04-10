@@ -59,30 +59,40 @@ const operations = {
     storeVar(name, 0)
   },
   if: ([ifExp, thenStat, elseStat, fiExp]) => {
-    const ifResult = isReversed ? evaluateExpression(fiExp) : evaluateExpression(ifExp)
+    const beforeResult = isReversed ? evaluateExpression(fiExp) : evaluateExpression(ifExp)
 
-    if (ifResult) {
+    if (beforeResult) {
       interpretStatement(thenStat[0])
     } else {
       interpretStatement(elseStat[0])
     }
 
-    // TODO: implment that fiExp thing
+    const afterResult = isReversed ?  evaluateExpression(ifExp) : evaluateExpression(fiExp)
+
+    if (afterResult != beforeResult)
+      throw `If statement pre-condition does not match post-assertion!`
   },
-  repeat: ([loopStatement, loopExp]) => {
-    while (!evaluateExpression(loopExp)) {
-      printVerbose("Loop variables: ", variables)
+  repeat: ([initialExp, loopStatement, loopExp]) => {
+    if (!evaluateExpression(isReversed ? loopExp : initialExp))
+      throw `Initial loop expression false: ${util.inspect(isReversed ? loopExp : initialExp)} ${util.inspect(variables)}`
+
+    do {
       interpretStatements(loopStatement)
-    }
+      printVerbose("Loop variables: ", variables)
+
+    } while (!evaluateExpression(isReversed ? initialExp : loopExp))
   },
   '+=': ([name, expression]) => storeVar(name, getVar(name) + protectVar(name, evaluateExpression, expression)),
   '-=': ([name, expression]) => storeVar(name, getVar(name) - protectVar(name, evaluateExpression, expression)),
+  '*=': ([name, expression]) => storeVar(name, getVar(name) * protectVar(name, evaluateExpression, expression)),
+  '/=': ([name, expression]) => storeVar(name, parseInt(getVar(name) / protectVar(name, evaluateExpression, expression), 10)),
   '+': ([a, b]) => evaluateExpression(a) + evaluateExpression(b),
   '-': ([a, b]) => evaluateExpression(a) - evaluateExpression(b),
   '*': ([a, b]) => evaluateExpression(a) * evaluateExpression(b),
   '/': ([a, b]) => parseInt(evaluateExpression(a) / evaluateExpression(b), 10),
   '%': ([a, b]) => evaluateExpression(a) % evaluateExpression(b),
   '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b) ? 1 : 0, // Output 1,0 instead of true,false
+  '!=': ([a, b]) => evaluateExpression(a) != evaluateExpression(b) ? 1 : 0, // Output 1,0 instead of true,false
   '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b) ? 1 : 0,
   'var': ([name]) => getVar(name),
   'proc': () => null,
@@ -98,7 +108,10 @@ const operations = {
       throw `Procedure ${name} is not defined!`
 
     const procedureStatements = procedures[name]
-    return interpretStatements(procedureStatements, true)
+    isReversed = !isReversed
+    const result =  interpretStatements(procedureStatements)
+    isReversed = !isReversed
+    return result
   }
 }
 
@@ -108,6 +121,8 @@ const reversedOperations = {
   print: 'read',
   '+=': '-=',
   '-=': '+=',
+  '*=': '/=',
+  '/=': '*=',
 }
 
 // Interpret a whole code file
@@ -135,7 +150,7 @@ const interpret = ({
 
 // Interpret multiple statements
 const interpretStatements = (statements, reversed = false) => {
-  if (reversed ? !isReversed : isReversed)
+  if (isReversed)
     statements.reverse()
 
   for (statement of statements) {
