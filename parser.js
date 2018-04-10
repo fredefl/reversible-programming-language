@@ -1,6 +1,7 @@
-const parser = {lex: {}, operators: {}, bnf: {}}
+const jison = require('jison').Parser
+const parsingGrammar = {lex: {}, operators: {}, bnf: {}}
 
-parser.lex.rules = [
+parsingGrammar.lex.rules = [
   // General
   ["\\s+",        "/* skip whitespace */"],
   [";",           "return ';'"],
@@ -47,14 +48,14 @@ parser.lex.rules = [
   ["[A-z]+", "return 'NAME'"],
 ]
 
-parser.operators = [
+parsingGrammar.operators = [
   ["left", "=", "<"],
   ["left", "+", "-"],
   ["left", "*", "/", "%"],
   ["left", ";"],
 ]
 
-parser.bnf = {
+parsingGrammar.bnf = {
   statements: [
     ["statement ;", "return $1"],
   ],
@@ -83,4 +84,4 @@ parser.bnf = {
   ],
 }
 
-module.exports = parser
+module.exports = jison(parsingGrammar)
