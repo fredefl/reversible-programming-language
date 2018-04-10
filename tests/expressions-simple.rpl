@@ -4,3 +4,13 @@ test += 2 + hast;
 test -= 4*2;
 print test;
 print hast;
+
+mod += 31 % 7;
+print mod;
+
+bool += 1 = 1;
+otherbool -= 2 < 5;
+otherbool -= 2 < 5;
+otherbool += 10 < 5;
+print bool;
+print otherbool;

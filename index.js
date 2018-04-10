@@ -72,8 +72,9 @@ const operations = {
   '-': ([a, b]) => evaluateExpression(a) - evaluateExpression(b),
   '*': ([a, b]) => evaluateExpression(a) * evaluateExpression(b),
   '/': ([a, b]) => parseInt(evaluateExpression(a) / evaluateExpression(b), 10),
-  '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b),
-  '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b),
+  '%': ([a, b]) => evaluateExpression(a) % evaluateExpression(b),
+  '=': ([a, b]) => evaluateExpression(a) == evaluateExpression(b) ? 1 : 0, // Output 1,0 instead of true,false
+  '<': ([a, b]) => evaluateExpression(a) < evaluateExpression(b) ? 1 : 0,
   'var': ([name]) => getVar(name),
   'proc': () => null,
   'call': ([name]) => {
@@ -228,7 +229,3 @@ if (program.test != null) {
 } else {
   interpret(statements)
 }
-
-if (isVerbose)
-  print(variables)
-
