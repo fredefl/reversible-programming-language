@@ -1,5 +1,0 @@
-
-test += 10
-hast += 5
-test += 2 + hash
-test -= 4*2
