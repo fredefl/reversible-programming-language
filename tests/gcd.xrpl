@@ -1,0 +1,29 @@
+read a;
+read b;
+
+c += a + b;
+
+proc exit
+	c -= x;
+	c += 1;
+	print x;
+end;
+
+proc gcd
+	if a % c = 0 then
+		if b % c = 0 then
+			x += c
+		else
+			d += 1
+		fi c = 0
+	else
+		d += 1
+	fi a % c = 0;
+	c -= 1;
+
+	if x != 0 then call exit else call gcd fi c < 0;
+end;
+
+call gcd;
+
+ 
