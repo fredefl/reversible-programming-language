@@ -22,13 +22,20 @@ parsingGrammar.lex.rules = [
 
   // Procedure
   ["proc",        "return 'PROC'"],
-  ["end",        "return 'END'"],
+  ["end",         "return 'END'"],
   ["call",        "return 'CALL'"],
   ["uncall",      "return 'UNCALL'"],
 
   // IO
   ["read",        "return 'READ'"],
-  ["print",        "return 'PRINT'"],
+  ["print",       "return 'PRINT'"],
+
+  // Stack
+  ["pop",         "return 'POP'"],
+  ["push",        "return 'PUSH'"],
+  ["peek",        "return 'PEEK'"],
+  ["length",         "return 'LENGTH'"],
+  ["isEmpty",     "return 'ISEMPTY'"],
 
   // Assignment
   ["\\+=",        "return '+='"],
@@ -37,20 +44,20 @@ parsingGrammar.lex.rules = [
   ["\\/=",        "return '/='"],
 
   // Math
-  ["\\+",    "return '+'"],
-  ["-",      "return '-'"],
-  ["\\*",    "return '*'"],
-  ["\\/",    "return '/'"],
-  ["%",      "return '%'"],
+  ["\\+",         "return '+'"],
+  ["-",           "return '-'"],
+  ["\\*",         "return '*'"],
+  ["\\/",         "return '/'"],
+  ["%",           "return '%'"],
 
   // Comparison
-  ["<",      "return '<'"],
-  [">",      "return '>'"],
-  ["!=",      "return '!='"],
-  ["=",      "return '='"],
+  ["<",           "return '<'"],
+  [">",           "return '>'"],
+  ["!=",          "return '!='"],
+  ["=",           "return '='"],
 
   // Variable
-  ["[A-z]+", "return 'NAME'"],
+  ["[A-z]+",      "return 'NAME'"],
 ]
 
 parsingGrammar.operators = [
@@ -66,17 +73,19 @@ parsingGrammar.bnf = {
   ],
   statement: [
     ["statement ; statement", "$$ = $1.concat($3)"],
-    ["NAME += e",  "$$ = [[$2, $1, $3]]"],
-    ["NAME -= e",  "$$ = [[$2, $1, $3]]"],
-    ["NAME *= e",  "$$ = [[$2, $1, $3]]"],
-    ["NAME /= e",  "$$ = [[$2, $1, $3]]"],
-    ["CALL NAME",  "$$ = [[$1, $2]]"],
-    ["UNCALL NAME",  "$$ = [[$1, $2]]"],
+    ["NAME += e",     "$$ = [[$2, $1, $3]]"],
+    ["NAME -= e",     "$$ = [[$2, $1, $3]]"],
+    ["NAME *= e",     "$$ = [[$2, $1, $3]]"],
+    ["NAME /= e",     "$$ = [[$2, $1, $3]]"],
+    ["CALL NAME",     "$$ = [[$1, $2]]"],
+    ["UNCALL NAME",   "$$ = [[$1, $2]]"],
+    ["READ NAME",     "$$ = [[$1, $2]]"],
+    ["PRINT NAME",    "$$ = [[$1, $2]]"],
+    ["POP NAME NAME",      "$$ = [[$1, $2, $3]]"],
+    ["PUSH NAME NAME",     "$$ = [[$1, $2, $3]]"],
     ["PROC NAME statement ; END",  "$$ = [[$1, $2, $3]]"],
-    ["READ NAME",      "$$ = [[$1, $2]]"],
-    ["PRINT NAME",      "$$ = [[$1, $2]]"],
     ["IF e THEN statement ELSE statement FI e", "$$ = [[$1, $2, $4, $6, $8]]"],
-    ["FROM e REPEAT statement ; UNTIL e", "$$ = [[$3, $2, $4, $7]]"],
+    ["FROM e REPEAT statement ; UNTIL e",       "$$ = [[$3, $2, $4, $7]]"],
   ],
   e: [
     ["INTEGER",   "$$ = parseInt($1)"],
@@ -88,8 +97,11 @@ parsingGrammar.bnf = {
     ["e % e",     "$$ = [$2, $1, $3]"],
     ["e < e",     "$$ = [$2, $1, $3]"],
     ["e > e",     "$$ = [$2, $1, $3]"],
-    ["e != e",     "$$ = [$2, $1, $3]"],
+    ["e != e",    "$$ = [$2, $1, $3]"],
     ["e = e",     "$$ = [$2, $1, $3]"],
+    ["PEEK NAME",     "$$ = [$1, $2]"],
+    ["LENGTH NAME",   "$$ = [$1, $2]"],
+    ["ISEMPTY NAME",  "$$ = [$1, $2]"],
   ],
 }
 

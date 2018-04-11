@@ -23,6 +23,15 @@ const protectVar = (name, func, ...args) => {
   protectedVar = null
   return result
 }
+const ensureStack = (stackName) => {
+  if (!(stackName in variables) || getVar(stackName) == null) {
+    storeVar(stackName, [])
+  } else if (Array.isArray(getVar(stackName))) {
+    return
+  } else if (!isNaN(getVar(stackName))) {
+    throw `Type mismatch, variable ${stackName} is an int but used as a stack`
+  }
+}
 
 // Test IO
 let testStdin = []
@@ -40,15 +49,25 @@ const operations = {
     if (existingValue !== 0)
       throw `Variable '${name}' is trying to be read, but is not zero (${existingValue})`
 
-    const input = testStdin.length > 0 ? testStdin.shift() : readlineSync.question()
+    let input = testStdin.length > 0 ? testStdin.shift() : readlineSync.question()
 
-    if (isNaN(input))
-      throw `Input for variable '${name}' is not a number`
+    if (input.trim()[0] === '[') {
+      input = JSON.parse(input)
+    } else {
+      input = parseInt(input, 10)
+    }
 
-    storeVar(name, parseInt(input, 10))
+    if (isNaN(input) && !Array.isArray(input)) {
+      throw `Input for variable '${name}' is not a number nor an array`
+    }
+
+    storeVar(name, input)
   },
   print: ([name]) => {
-    const value = getVar(name)
+    let value = getVar(name)
+
+    if (Array.isArray(value))
+      value = JSON.stringify(value)
     
     if (isTest != null) {
       testStdout.push(value)
@@ -60,6 +79,8 @@ const operations = {
   },
   if: ([ifExp, thenStat, elseStat, fiExp]) => {
     const beforeResult = isReversed ? evaluateExpression(fiExp) : evaluateExpression(ifExp)
+
+    //console.log(util.inspect(ifExp), util.inspect(thenStat), util.inspect(elseStat), util.inspect(fiExp))
 
     if (beforeResult) {
       interpretStatement(thenStat[0])
@@ -113,7 +134,33 @@ const operations = {
     const result =  interpretStatements(procedureStatements)
     isReversed = !isReversed
     return result
-  }
+  },
+  'push': ([stackName, valueName]) => {
+    ensureStack(stackName)
+    getVar(stackName).push(getVar(valueName))
+    storeVar(valueName, 0)
+  },
+  'pop': ([stackName, valueName]) => {
+    ensureStack(stackName)
+    const existingValue = getVar(valueName)
+    if (existingValue !== 0)
+      throw `Variable '${valueName}' is trying to be read, but is not zero (${existingValue})`
+
+
+    storeVar(valueName, getVar(stackName).pop())
+  },
+  'peek': ([name]) => {
+    ensureStack(name)
+    return getVar(name).slice(-1)[0]
+  },
+  'length': ([name]) => {
+    ensureStack(name)
+    return getVar(name).length
+  },
+  'isEmpty': ([name]) => {
+    ensureStack(name)
+    return getVar(name).length === 0 ? 1 : 0
+  },
 }
 
 // Operations that should be substituted when reversed
@@ -124,6 +171,8 @@ const reversedOperations = {
   '-=': '+=',
   '*=': '/=',
   '/=': '*=',
+  'pop': 'push',
+  'push': 'pop',
 }
 
 // Interpret a whole code file
@@ -151,10 +200,11 @@ const interpret = ({
 
 // Interpret multiple statements
 const interpretStatements = (statements, reversed = false) => {
+  const statementsClone = statements.slice()
   if (isReversed)
-    statements.reverse()
+    statementsClone.reverse()
 
-  for (statement of statements) {
+  for (statement of statementsClone) {
     interpretStatement(statement)
   }
 }

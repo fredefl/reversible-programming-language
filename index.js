@@ -88,7 +88,7 @@ const {
   variables
 } = interpretationResults
 
-const nonZeroVariables = Object.entries(variables).filter(([k, v]) => v !== 0)
+const nonZeroVariables = Object.entries(variables).filter(([k, v]) => v !== 0 && !(Array.isArray(v) && v.length === 0))
 
 if (nonZeroVariables.length > 0) {
   const nonZeroVariablesText = nonZeroVariables.map(([k, v]) => `${k} (${v})`).join(', ')
