@@ -7,22 +7,33 @@ let variables = {}
 let procedures = {}
 let protectedVar = null
 
-// Utilities
+// -- Utilities
+// Fetches a variable from the symbol table
 const getVar = (name) => {
   if (name === protectedVar)
     throw `Variable ${name} was used on the right hand of its own assigning`
 
   return variables[name] || 0
 }
+
+// Stores a variable in the symbol table
 const storeVar = (name, value) => variables[name] = value
+
+// Prints object to the TTY for debugging
 const print = (title, value) => console.log(title, util.inspect(value, false, null, true))
+
+// Print, but affected by verbosity setting
 const printVerbose = (title, value) => isVerbose ? print(title, value) : null
+
+// Protects a variable assignment from it occuring in the expression
 const protectVar = (name, func, ...args) => {
   protectedVar = name
   let result = func(...args)
   protectedVar = null
   return result
 }
+
+// Ensures that a stack present in the variable
 const ensureStack = (stackName) => {
   if (!(stackName in variables) || getVar(stackName) == null) {
     storeVar(stackName, [])
@@ -79,8 +90,6 @@ const operations = {
   },
   if: ([ifExp, thenStat, elseStat, fiExp]) => {
     const beforeResult = isReversed ? evaluateExpression(fiExp) : evaluateExpression(ifExp)
-
-    //console.log(util.inspect(ifExp), util.inspect(thenStat), util.inspect(elseStat), util.inspect(fiExp))
 
     if (beforeResult) {
       interpretStatement(thenStat[0])
@@ -145,7 +154,6 @@ const operations = {
     const existingValue = getVar(valueName)
     if (existingValue !== 0)
       throw `Variable '${valueName}' is trying to be read, but is not zero (${existingValue})`
-
 
     storeVar(valueName, getVar(stackName).pop())
   },
@@ -249,6 +257,7 @@ const evaluateExpression = (expression) => {
 }
 
 // Scan for procedures in a file (statements)
+// such that procedures can be calle at any time, regardless of position
 const scanProcedures = (statements) => {
   for (statement of statements) {
     const [operation, ...options] = statement
