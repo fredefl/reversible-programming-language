@@ -2,9 +2,6 @@
   "name": "reversible-programming-language",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:fredefl/reversible-programming-language.git",
-  "author": "Frederik Lassen <frederiklassen@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "chalk": "^2.3.2",
     "commander": "^2.15.1",
